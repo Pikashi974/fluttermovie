@@ -36,9 +36,9 @@ class CardObjectState extends State<CardObject> {
       for (var genre in movie.genre) {
         for (var i = 0; i < jsonBody.length; i++) {
           var element = jsonBody[i]["id"];
-          log("${element == genre}");
+          // log("${element == genre}");
           if (element == genre) {
-            genreText = "$genreText${jsonBody[i]["name"]},";
+            genreText = "$genreText${jsonBody[i]["name"]}, ";
           }
         }
       }
@@ -53,8 +53,7 @@ class CardObjectState extends State<CardObject> {
       builder: (context, AsyncSnapshot<String> snapshot) => Card(
         child: Column(
           children: [
-            Image.network(
-                'https://image.tmdb.org/t/p/w300/${resultElement.image}'),
+            Image.network(resultElement.image),
             Text(resultElement.title),
             Text(resultElement.date),
             Text("${snapshot.data}"),

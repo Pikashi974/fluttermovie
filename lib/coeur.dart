@@ -15,7 +15,7 @@ class CoeurApp extends StatefulWidget {
 }
 
 class _CoeurAppState extends State<CoeurApp> {
-  late List<Movie> futureCardObject;
+  List<Movie> futureCardObject = [];
 
   void fetchCardObject(queryElement) async {
     final response = await http.get(Uri.parse(
@@ -51,7 +51,7 @@ class _CoeurAppState extends State<CoeurApp> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Flutter CardObject!'),
+            Text('Flutter Movies Coup de coeur!'),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,

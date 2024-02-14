@@ -15,12 +15,12 @@ class HomeApp extends StatefulWidget {
 }
 
 class _HomeAppState extends State<HomeApp> {
-  late List<Movie> futureCardObject = [];
+  List<Movie> futureCardObject = [];
   final TextEditingController _textEditingController = TextEditingController();
-  final scaffoldKey = GlobalKey<ListMovieState>();
-  void fetchCardObject(queryElement) async {
+
+  fetchCardObject(queryElement) async {
     final response = await http.get(Uri.parse(
-        'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=$queryElement&language=fr-FR'));
+        'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=${_textEditingController.text}&language=fr-FR'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
@@ -33,19 +33,12 @@ class _HomeAppState extends State<HomeApp> {
         // log("${elementMovie}");
         temp.add(elementMovie);
       }
-      updateList(temp);
+      return temp;
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load CardObject');
     }
-  }
-
-  void updateList(List<Movie> element) {
-    log("Hello");
-    setState(() {
-      futureCardObject = element;
-    });
   }
 
   @override
@@ -99,7 +92,10 @@ class _HomeAppState extends State<HomeApp> {
                   EdgeInsets.symmetric(horizontal: 16.0)),
               leading: TextButton(
                 onPressed: () {
-                  fetchCardObject(_textEditingController.text);
+                  fetchCardObject(_textEditingController.text)
+                      .then((value) => setState(() {
+                            futureCardObject = value;
+                          }));
                 },
                 child: const Icon(Icons.search),
               ),
@@ -111,8 +107,7 @@ class _HomeAppState extends State<HomeApp> {
                 OutlinedButton(
                   onPressed: () {
                     setState(() {
-                      // futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
-                      scaffoldKey.currentState?.sortByTop();
+                      futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
                     });
                   },
                   style: ButtonStyle(
@@ -123,10 +118,8 @@ class _HomeAppState extends State<HomeApp> {
                 ),
                 OutlinedButton(
                   onPressed: () {
-                    futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
                     setState(() {
-                      // futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
-                      scaffoldKey.currentState?.sortByTop();
+                      futureCardObject.sort((a, b) => a.vote.compareTo(b.vote));
                     });
                   },
                   style: ButtonStyle(
@@ -137,14 +130,7 @@ class _HomeAppState extends State<HomeApp> {
                 ),
               ],
             ),
-            Container(
-              child: futureCardObject.isNotEmpty
-                  ? ListMovie(
-                      key: scaffoldKey,
-                      liste: futureCardObject,
-                    )
-                  : const Center(child: Text('No items')),
-            )
+            for (var m in futureCardObject) CardObject(obj: m),
           ],
         ),
       ),
