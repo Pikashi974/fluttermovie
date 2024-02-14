@@ -17,7 +17,7 @@ class HomeApp extends StatefulWidget {
 class _HomeAppState extends State<HomeApp> {
   late List<Movie> futureCardObject = [];
   final TextEditingController _textEditingController = TextEditingController();
-  // late final ScrollController _scrollController = ScrollController();
+  final scaffoldKey = GlobalKey<ListMovieState>();
   void fetchCardObject(queryElement) async {
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=$queryElement&language=fr-FR'));
@@ -109,7 +109,12 @@ class _HomeAppState extends State<HomeApp> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      // futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
+                      scaffoldKey.currentState?.sortByTop();
+                    });
+                  },
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0.0))),
@@ -117,7 +122,13 @@ class _HomeAppState extends State<HomeApp> {
                   child: Text("Top"),
                 ),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
+                    setState(() {
+                      // futureCardObject.sort((a, b) => b.vote.compareTo(a.vote));
+                      scaffoldKey.currentState?.sortByTop();
+                    });
+                  },
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0.0))),
@@ -129,6 +140,7 @@ class _HomeAppState extends State<HomeApp> {
             Container(
               child: futureCardObject.isNotEmpty
                   ? ListMovie(
+                      key: scaffoldKey,
                       liste: futureCardObject,
                     )
                   : const Center(child: Text('No items')),

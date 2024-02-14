@@ -7,14 +7,31 @@ class ListMovie extends StatefulWidget {
   ListMovie({super.key, required this.liste});
   List<Movie> liste;
   @override
-  State<ListMovie> createState() => _ListMovieState(liste);
+  State<ListMovie> createState() => ListMovieState(liste);
 }
 
-class _ListMovieState extends State<ListMovie> {
+class ListMovieState extends State<ListMovie> {
   List<Movie> movies = [];
 
-  _ListMovieState(List<Movie> liste) {
+  ListMovieState(List<Movie> liste) {
     movies = liste;
+  }
+  void sortByTop() {
+    setState(() {
+      movies.sort((a, b) => b.vote.compareTo(a.vote));
+    });
+  }
+
+  void sortByBottom() {
+    setState(() {
+      movies.sort((a, b) => a.vote.compareTo(b.vote));
+    });
+  }
+
+  void changeList(List<Movie> obj) {
+    setState(() {
+      movies = obj;
+    });
   }
 
   @override
