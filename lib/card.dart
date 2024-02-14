@@ -1,41 +1,41 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fluttermovie/movies.dart';
 
-class CardObject {
-  final Image image;
-  final String title;
-  final String date;
-  final String score;
-  final String overview;
+class CardObject extends StatefulWidget {
+  CardObject({super.key, required this.obj});
+  Movie obj;
 
-  const CardObject(
-      {required this.image,
-      required this.title,
-      required this.date,
-      required this.score,
-      required this.overview});
+  @override
+  State<CardObject> createState() => CardObjectState(obj);
+}
 
-  factory CardObject.fromJson(Map<String, dynamic> json) {
-    json = json["results"];
-    log(jsonEncode(json));
-    return switch (json) {
-      {
-        "image": Image image,
-        "title": String title,
-        "date": String date,
-        "score": String score,
-        "overview": String overview,
-      } =>
-        CardObject(
-          image: image,
-          title: title,
-          date: date,
-          score: score,
-          overview: overview,
-        ),
-      _ => throw const FormatException('Failed to load Cards.'),
-    };
+class CardObjectState extends State<CardObject> {
+  late Movie resultElement;
+  CardObjectState(obj) {
+    resultElement = obj;
+  }
+
+  // void changeList(List obj) {
+  //   setState(() {
+  //     resultElement = obj;
+  //   });
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: Column(
+      children: [
+        Image.network('https://image.tmdb.org/t/p/w300/${resultElement.image}'),
+        Text(resultElement.title),
+        Text(resultElement.date),
+        Text("${resultElement.vote}"),
+        Text(
+          resultElement.overview,
+        )
+      ],
+    ));
   }
 }

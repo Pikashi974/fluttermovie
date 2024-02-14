@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fluttermovie/card.dart';
+import 'package:fluttermovie/listmovies.dart';
+import 'package:fluttermovie/movies.dart';
 import 'package:http/http.dart' as http;
 
 class HomeApp extends StatefulWidget {
@@ -13,23 +15,37 @@ class HomeApp extends StatefulWidget {
 }
 
 class _HomeAppState extends State<HomeApp> {
-  // late Future<CardObject> futureCardObject;
-
+  late List<Movie> futureCardObject = [];
   final TextEditingController _textEditingController = TextEditingController();
-  Future<CardObject> fetchCardObject(queryElement) async {
+  // late final ScrollController _scrollController = ScrollController();
+  void fetchCardObject(queryElement) async {
     final response = await http.get(Uri.parse(
-        'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=${queryElement}&language=fr-FR'));
+        'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=$queryElement&language=fr-FR'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return CardObject.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
+      List<Movie> temp = [];
+      var jsonBody = jsonDecode(response.body)["results"];
+      for (var index = 0; index < jsonBody.length; index++) {
+        var movie = jsonBody[index];
+        var elementMovie = Movie.fromJson(movie as Map<String, dynamic>);
+        // log("${elementMovie}");
+        temp.add(elementMovie);
+      }
+      updateList(temp);
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load CardObject');
     }
+  }
+
+  void updateList(List<Movie> element) {
+    log("Hello");
+    setState(() {
+      futureCardObject = element;
+    });
   }
 
   @override
@@ -48,11 +64,9 @@ class _HomeAppState extends State<HomeApp> {
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        body: ListView(
           children: [
-            Text('Flutter CardObject!'),
+            Center(child: Text('Flutter Movie!')),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,7 +100,6 @@ class _HomeAppState extends State<HomeApp> {
               leading: TextButton(
                 onPressed: () {
                   fetchCardObject(_textEditingController.text);
-                  // log(futureCardObject.toString());
                 },
                 child: const Icon(Icons.search),
               ),
@@ -96,9 +109,7 @@ class _HomeAppState extends State<HomeApp> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 OutlinedButton(
-                  onPressed: () {
-                    log(_textEditingController.text);
-                  },
+                  onPressed: () {},
                   style: ButtonStyle(
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0.0))),
@@ -115,10 +126,13 @@ class _HomeAppState extends State<HomeApp> {
                 ),
               ],
             ),
-            // ListView(
-            //   controller: futureCardObject,
-            //   children: [Text("")],
-            // )
+            Container(
+              child: futureCardObject.isNotEmpty
+                  ? ListMovie(
+                      liste: futureCardObject,
+                    )
+                  : const Center(child: Text('No items')),
+            )
           ],
         ),
       ),

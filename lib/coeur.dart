@@ -1,7 +1,9 @@
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fluttermovie/card.dart';
+import 'package:fluttermovie/listmovies.dart';
+import 'package:fluttermovie/movies.dart';
+// import 'package:fluttermovie/card.dart';
 // import 'package:fluttermovie/movies.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,17 +15,15 @@ class CoeurApp extends StatefulWidget {
 }
 
 class _CoeurAppState extends State<CoeurApp> {
-  late Future<CardObject> futureCardObject;
+  late List<Movie> futureCardObject;
 
-  Future<CardObject> fetchCardObject(queryElement) async {
+  void fetchCardObject(queryElement) async {
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/search/movie?api_key=26a145d058cf4d1b17cbf084ddebedec&query=${queryElement}&language=fr-FR'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return CardObject.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -78,9 +78,9 @@ class _CoeurAppState extends State<CoeurApp> {
                 ),
               ],
             ),
-            // ListView(
-            //   children: [],
-            // )
+            ListMovie(
+              liste: futureCardObject,
+            )
           ],
         ),
       ),
